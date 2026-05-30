@@ -1,4 +1,5 @@
 import en from "./locales/en";
+import ar from "./locales/ar";
 import ja from "./locales/ja";
 import zh from "./locales/zh";
 import vi from "./locales/vi";
@@ -13,19 +14,20 @@ import { LANGUAGE_PREF_KEY } from "../app/constants";
 /**
  * Supported languages
  */
-export type Language = "en" | "ja" | "zh" | "vi" | "pt-BR" | "th" | "fr" | "ca" | "es" | "ru";
+export type Language = "en" | "ar" | "ja" | "zh" | "vi" | "pt-BR" | "th" | "fr" | "ca" | "es" | "ru";
 export type Locale = Language;
 
 /**
  * All supported languages - single source of truth
  */
-export const LANGUAGES: Language[] = ["en", "ja", "zh", "vi", "pt-BR", "th", "fr", "ca", "es", "ru"];
+export const LANGUAGES: Language[] = ["en", "ar", "ja", "zh", "vi", "pt-BR", "th", "fr", "ca", "es", "ru"];
 
 /**
  * Language options for UI - single source of truth
  */
 export const LANGUAGE_OPTIONS = [
   { value: "en" as Language, label: "English", nativeName: "English" },
+  { value: "ar" as Language, label: "Arabic", nativeName: "العربية" },
   { value: "ja" as Language, label: "Japanese", nativeName: "日本語" },
   { value: "zh" as Language, label: "Chinese (Simplified)", nativeName: "简体中文" },
   { value: "vi" as Language, label: "Vietnamese", nativeName: "Tiếng Việt" },
@@ -57,6 +59,7 @@ export const pluralSuffix = (locale: Language, count: number): string => {
  */
 const TRANSLATIONS: Record<Language, Record<string, string>> = {
   en,
+  ar,
   ja,
   zh,
   vi,
@@ -99,6 +102,7 @@ export const setLocale = (newLocale: Language) => {
 
   if (typeof document !== "undefined") {
     document.documentElement.setAttribute("lang", newLocale);
+    document.documentElement.setAttribute("dir", newLocale === "ar" ? "rtl" : "ltr");
   }
 
   // Persist to localStorage
@@ -122,6 +126,7 @@ const lookupEntry = (loc: Language, candidateKey: string): string | null => {
 
 const pluralRulesByLanguage: Record<Language, Intl.PluralRules> = {
   en: new Intl.PluralRules("en"),
+  ar: new Intl.PluralRules("ar"),
   ja: new Intl.PluralRules("ja"),
   zh: new Intl.PluralRules("zh"),
   vi: new Intl.PluralRules("vi"),
@@ -177,7 +182,6 @@ export const t = (
 
   const lookupKey =
     typeof params?.count === "number" ? resolvePluralKey(loc, key, params.count) : key;
-
   const result = lookupEntry(loc, lookupKey);
   if (result === null) return key;
 
@@ -206,6 +210,7 @@ export const initLocale = (): Language => {
       localeValue = stored;
       if (typeof document !== "undefined") {
         document.documentElement.setAttribute("lang", stored);
+        document.documentElement.setAttribute("dir", stored === "ar" ? "rtl" : "ltr");
       }
       return stored;
     }
@@ -215,6 +220,7 @@ export const initLocale = (): Language => {
 
   if (typeof document !== "undefined") {
     document.documentElement.setAttribute("lang", "en");
+    document.documentElement.setAttribute("dir", "ltr");
   }
 
   return "en";
